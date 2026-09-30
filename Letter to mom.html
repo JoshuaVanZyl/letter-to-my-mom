@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Special Message For You 💖</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts for romantic typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500;700&family=Great+Vibes&family=Montserrat:wght@300;400;600;700&family=Playfair+Display:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* Custom animated gradient background */
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(-45deg, #ff758c, #ff7eb3, #764ba2, #667eea, #e0c3fc, #8ec5fc);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Canvas positions */
+        #heartCanvas, #clickCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        #heartCanvas { z-index: 1; }
+        #clickCanvas { z-index: 99; }
+
+        .font-handwriting {
+            font-family: 'Dancing Script', cursive;
+        }
+        .font-romantic-title {
+            font-family: 'Great Vibes', cursive;
+        }
+        .font-serif-classic {
+            font-family: 'Playfair Display', serif;
+        }
+
+        /* Glassmorphism effects */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.45);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 20px 50px rgba(118, 75, 162, 0.25);
+        }
+
+        .paper-card {
+            background: #fffdfa;
+            background-image: radial-gradient(#f1e5d8 0.75px, transparent 0.75px);
+            background-size: 16px 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15), inset 0 0 80px rgba(255, 228, 230, 0.5);
+        }
+
+        /* 3D Envelope Styles */
+        .perspective-1000 {
+            perspective: 1200px;
+        }
+
+        .envelope-wrapper {
+            position: relative;
+            width: 320px;
+            height: 220px;
+            margin: 0 auto;
+            transition: transform 0.6s ease;
+        }
+
+        @media (min-width: 640px) {
+            .envelope-wrapper {
+                width: 440px;
+                height: 290px;
+            }
+        }
+
+        .envelope-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: #e24976;
+            border-radius: 12px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.25);
+        }
+
+        .envelope-flap {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 55%;
+            background: #ed5582;
+            clip-path: polygon(0 0, 50% 100%, 100% 0);
+            transform-origin: top center;
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1), z-index 0.2s 0.4s;
+            z-index: 4;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15));
+        }
+
+        .envelope-pocket {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 3;
+            pointer-events: none;
+        }
+
+        .pocket-left {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #f0628d;
+            clip-path: polygon(0 0, 50% 50%, 0 100%);
+            border-bottom-left-radius: 12px;
+            border-top-left-radius: 12px;
+        }
+
+        .pocket-right {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+            background: #f0628d;
+            clip-path: polygon(100% 0, 50% 50%, 100% 100%);
+            border-bottom-right-radius: 12px;
+            border-top-right-radius: 12px;
+        }
+
+        .pocket-bottom {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #f4729b;
+            clip-path: polygon(0 100%, 50% 45%, 100% 100%);
+            border-bottom-left-radius: 12px;
+            border-bottom-right-radius: 12px;
+        }
+
+        /* Wax Seal */
+        .wax-seal {
+            position: absolute;
+            top: 55%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 58px;
+            height: 58px;
+            background: radial-gradient(circle, #b91c1c, #881337);
+            border-radius: 50%;
+            z-index: 5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3), inset 0 2px 4px rgba(255,255,255,0.3);
+            transition: all 0.3s ease;
+        }
+
+        .wax-seal:hover {
+            transform: translate(-50%, -50%) scale(1.1);
+            box-shadow: 0 6px 16px rgba(185, 28, 28, 0.5), inset 0 2px 4px rgba(255,255,255,0.4);
+        }
+
+        /* Letter Inside Envelope */
+        .envelope-letter {
+            position: absolute;
+            bottom: 10px;
+            left: 5%;
+            width: 90%;
+            height: 85%;
+            background: #fffdf9;
+            border-radius: 8px;
+            z-index: 2;
+            padding: 16px;
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1), z-index 0.1s 0.4s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Open State Animations */
+        .envelope-wrapper.open .envelope-flap {
+            transform: rotateX(180deg);
+            z-index: 1;
+        }
+
+        .envelope-wrapper.open .wax-seal {
+            opacity: 0;
+            pointer-events: none;
+            transform: translate(-50%, -50%) scale(0.3);
+        }
+
+        .envelope-wrapper.open .envelope-letter {
+            transform: translateY(-110px);
+            z-index: 5;
+        }
+
+        /* Ribbon accent */
+        .ribbon-tag {
+            background: linear-gradient(135deg, #ff4b1f, #ff9068);
+        }
+
+        /* Pulse glowing animations */
+        @keyframes subtlePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        .animate-subtle-pulse {
+            animation: subtlePulse 2.5s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body class="relative flex flex-col min-h-screen justify-between items-center select-none overflow-x-hidden">
+
+    <!-- Background Hearts Canvas -->
+    <canvas id="heartCanvas"></canvas>
+    <!-- Interactive Click/Tap FX Canvas -->
+    <canvas id="clickCanvas"></canvas>
+
+    <!-- Header Navigation & Controls Bar -->
+    <header class="relative z-20 w-full max-w-5xl px-6 py-4 flex justify-between items-center">
+        <div class="flex items-center space-x-2">
+            <span class="text-2xl text-pink-100 font-romantic-title font-bold drop-shadow">With Love</span>
+            <i class="fa-solid font-bold fa-heart text-pink-300 text-lg animate-bounce"></i>
+        </div>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <main class="relative z-10 w-full max-w-4xl px-4 my-auto flex flex-col items-center justify-center">
+
+        <!-- LANDING PAGE VIEW: Interactive Envelope -->
+        <div id="envelopeView" class="w-full flex flex-col items-center justify-center transition-all duration-700 opacity-100 scale-100">
+            
+            <div class="text-center mb-8 px-4">
+                <h1 class="text-4xl sm:text-6xl font-bold font-romantic-title text-white drop-shadow-lg tracking-wide mb-2">
+                    You've Received a Secret Letter
+                </h1>
+                <p class="text-pink-100 text-sm sm:text-base font-light max-w-md mx-auto drop-shadow">
+                    Someone has left a special romantic note just for you. Touch the seal or press below to unveil it.
+                </p>
+            </div>
+
+            <!-- Envelope Container -->
+            <div class="perspective-1000 my-4">
+                <div id="envelope" class="envelope-wrapper cursor-pointer shadow-2xl">
+                    <!-- Envelope Backing -->
+                    <div class="envelope-back"></div>
+                    
+                    <!-- Inside Peek Letter -->
+                    <div class="envelope-letter">
+                        <div class="text-center border-2 border-dashed border-pink-200 w-full h-full p-4 rounded flex flex-col items-center justify-center">
+                            <i class="fa-solid fa-heart text-pink-400 text-3xl mb-1"></i>
+                            <span class="font-handwriting text-pink-600 text-xl font-bold">Unfolding your message...</span>
+                        </div>
+                    </div>
+
+                    <!-- Front Pocket Folds -->
+                    <div class="envelope-pocket">
+                        <div class="pocket-left"></div>
+                        <div class="pocket-right"></div>
+                        <div class="pocket-bottom"></div>
+                    </div>
+
+                    <!-- Top Flap -->
+                    <div class="envelope-flap"></div>
+
+                    <!-- Wax Heart Seal -->
+                    <div id="waxSeal" class="wax-seal group">
+                        <i class="fa-solid fa-heart text-amber-100 text-xl group-hover:scale-125 transition-transform"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Button -->
+            <div class="mt-10 flex flex-col sm:flex-row items-center gap-4">
+                <button id="openBtn" class="animate-subtle-pulse bg-gradient-to-r from-pink-500 to-rose-600 hover:from-pink-600 hover:to-rose-700 text-white font-semibold text-lg px-8 py-3.5 rounded-full shadow-lg hover:shadow-pink-500/50 transition-all duration-300 flex items-center space-x-3 transform hover:-translate-y-0.5">
+                    <i class="fa-solid fa-envelope-open text-white"></i>
+                    <span>Open Envelope</span>
+                </button>
+            </div>
+            
+            <p class="text-white/70 text-xs mt-4 flex items-center gap-1">
+                <i class="fa-solid fa-hand-pointer text-pink-200"></i>
+                <span>Tap anywhere on screen to spawn floating hearts!</span>
+            </p>
+        </div>
+
+        <!-- SECOND PAGE VIEW: Expanded Romantic Letter Stationery -->
+        <div id="letterView" class="hidden w-full max-w-2xl transition-all duration-700 opacity-0 transform translate-y-12 my-6">
+            <div class="paper-card rounded-2xl p-6 sm:p-10 relative overflow-hidden border border-amber-100">
+                
+                <!-- Stationery Decorative Stamps & Accents -->
+                <div class="absolute top-4 right-4 flex items-center space-x-2">
+                    <div class="w-12 h-14 border-2 border-dashed border-rose-300 bg-rose-50/50 rounded flex flex-col items-center justify-center p-1 transform rotate-6 shadow-sm">
+                        <i class="fa-solid fa-heart text-rose-500 text-sm"></i>
+                        <span class="text-[9px] font-bold text-rose-700 tracking-tighter uppercase mt-0.5">LOVE 2026</span>
+                    </div>
+                </div>
+
+                <div class="absolute -top-12 -left-12 w-32 h-32 bg-pink-200/30 rounded-full blur-xl pointer-events-none"></div>
+
+                <!-- Letter Content -->
+                <div class="relative z-10">
+                    <!-- Title Header -->
+                    <div class="text-center mb-6">
+                        <span class="text-xs font-semibold tracking-widest uppercase text-rose-400 block mb-1">A Special Note For You</span>
+                        <h2 id="letterHeading" class="text-3xl sm:text-5xl font-handwriting font-bold text-rose-800">
+                            Mom
+                        </h2>
+                        <div class="w-24 h-1 bg-gradient-to-r from-transparent via-rose-300 to-transparent mx-auto mt-2"></div>
+                    </div>
+
+                    <!-- Customizable Body Text Container -->
+                    <div class="my-6 min-h-[160px] flex flex-col justify-center">
+                        <p id="letterBody" class="font-serif-classic text-gray-700 text-base sm:text-lg leading-relaxed sm:leading-loose text-center italic px-2 sm:px-6">
+                       A pillar of strength, a heart of gold, Mom, you're the one who's always been told,
+                        Stories of hardship, of trials and strife, But through it all, you've shone like a guiding life.
+
+                        Your journey's been long, with valleys dark and deep,
+                        Yet you rose above, with faith that never did sleep,
+                        You've weathered storms, and faced the unknown,
+                        But your love for us, has forever been shown.
+                        You've fought for our smiles, for our laughter and tears,
+                        You've been our rock, through all of life's fears,
+                        You've nurtured our dreams, and helped them take flight,
+                        You've been our constant, in the dark of night.
+
+                        Through every up and down, you've been the same,
+                        A steady heartbeat, a love that's never to blame,
+                        You've given us roots, and given us wings, And taught us to soar, with the wind beneath our wings.
+                        Your sacrifices, countless and true,
+                        Have paved the way, for me and for you, You've put us first, and put us above, And in doing so, you've shown us the depth of your love.
+                        Mom, I see you, I see your pain, I see the weight, of the burdens you've gained,
+                        But I also see, a love that's pure and strong,
+                        A love that's lifted us, and made our hearts sing.
+                        You've made our lives, worth living for, A tapestry, woven with threads of love and more,
+                        You've shown us courage, in the face of fear,
+                        And taught us to live, to love, and to persevere.
+                        So here's to you, dear Mom, this letter is for you,
+                        A small token, of the love we hold true, Thank you for being, our guiding star, We love you more, near and far.
+                        </p>
+                    </div>
+
+                    <!-- Romantic Quote / Footer Signature -->
+                    <div class="text-right mt-8 pr-4">
+                        <p class="font-handwriting text-2xl text-rose-700 font-bold" id="letterSign">Love You Ma ❤️</p>
+                        <p class="text-xs text-gray-400 font-light mt-1" id="letterDate"></p>
+                    </div>
+
+                    <!-- Interactive Photo Frame Card -->
+                    <div class="mt-8 pt-6 border-t border-rose-100 flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-12 h-12 rounded-full bg-rose-100 flex items-center justify-center text-rose-500 text-xl shadow-inner">
+                                <i class="fa-solid fa-sparkles"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-bold text-gray-800">Spread the Magic</h4>
+                                <p class="text-xs text-gray-500">Tap anywhere to burst floating hearts</p>
+                            </div>
+                        </div>
+
+                        <!-- Action Controls Toolbar -->
+                        <div class="flex items-center space-x-2 flex-wrap justify-center">
+                            <button id="burstBtn" class="px-3 py-1.5 bg-pink-500 hover:bg-pink-600 text-white rounded-lg text-xs font-semibold transition-colors flex items-center space-x-1.5 shadow-sm">
+                                <i class="fa-solid fa-heart-circle-bolt"></i>
+                                <span>Heart Burst</span>
+                            </button>
+                            <button id="resealBtn" class="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-xs font-semibold transition-colors flex items-center space-x-1.5 border border-gray-300">
+                                <i class="fa-solid fa-envelope-circle-check"></i>
+                                <span>Close Letter</span>
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="relative z-20 py-4 text-center text-xs text-white/80 font-light">
+        Designed with <i class="fa-solid fa-heart text-pink-300"></i> for special moments
+    </footer>
+
+    <script>
+        /* Floating Canvas Hearts System */
+        const canvas = document.getElementById('heartCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
+
+        window.addEventListener('resize', () => {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        });
+
+        // Heart particle class for floating background effect
+        class FloatingHeart {
+            constructor() {
+                this.reset(true);
+            }
+
+            reset(initial = false) {
+                this.x = Math.random() * width;
+                this.y = initial ? Math.random() * height : height + 20;
+                this.size = Math.random() * 18 + 8; // Size between 8 and 26
+                this.speedY = Math.random() * 1.2 + 0.6;
+                this.speedX = Math.sin(Math.random() * Math.PI) * 0.8;
+                this.opacity = Math.random() * 0.6 + 0.3;
+                this.rotation = Math.random() * Math.PI * 2;
+                this.rotationSpeed = (Math.random() - 0.5) * 0.02;
+                this.swing = Math.random() * 0.05;
+                this.swingCount = Math.random() * 100;
+                
+                // Varied pink, purple, lavender colors
+                const colors = [
+                    'rgba(255, 182, 193, ', // Light Pink
+                    'rgba(255, 105, 180, ', // Hot Pink
+                    'rgba(219, 112, 147, ', // Pale Violet Red
+                    'rgba(186, 85, 211, ',  // Medium Orchid
+                    'rgba(221, 160, 221, ', // Plum
+                    'rgba(255, 192, 203, '  // Pink
+                ];
+                this.colorBase = colors[Math.floor(Math.random() * colors.length)];
+            }
+
+            update() {
+                this.y -= this.speedY;
+                this.swingCount += this.swing;
+                this.x += Math.sin(this.swingCount) * 0.6 + this.speedX;
+                this.rotation += this.rotationSpeed;
+
+                if (this.y < -30) {
+                    this.reset(false);
+                }
+            }
+
+            draw() {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.rotation);
+                ctx.fillStyle = this.colorBase + this.opacity + ')';
+
+                // Path for drawing a heart shape
+                ctx.beginPath();
+                const topCurveHeight = this.size * 0.3;
+                ctx.moveTo(0, topCurveHeight);
+                ctx.bezierCurveTo(0, 0, -this.size / 2, 0, -this.size / 2, topCurveHeight);
+                ctx.bezierCurveTo(-this.size / 2, (this.size + topCurveHeight) / 2, 0, this.size, 0, this.size);
+                ctx.bezierCurveTo(0, this.size, this.size / 2, (this.size + topCurveHeight) / 2, this.size / 2, topCurveHeight);
+                ctx.bezierCurveTo(this.size / 2, 0, 0, 0, 0, topCurveHeight);
+                ctx.closePath();
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        // Initialize heart pool
+        const heartCount = Math.min(Math.floor(width / 15), 50);
+        const hearts = [];
+        for (let i = 0; i < heartCount; i++) {
+            hearts.push(new FloatingHeart());
+        }
+
+        function animateHearts() {
+            ctx.clearRect(0, 0, width, height);
+            hearts.forEach(heart => {
+                heart.update();
+                heart.draw();
+            });
+            requestAnimationFrame(animateHearts);
+        }
+        animateHearts();
+
+        /* Interactive Click/Tap Burst Canvas Engine */
+        const clickCanvas = document.getElementById('clickCanvas');
+        const clickCtx = clickCanvas.getContext('2d');
+
+        let clickWidth = clickCanvas.width = window.innerWidth;
+        let clickHeight = clickCanvas.height = window.innerHeight;
+
+        window.addEventListener('resize', () => {
+            clickWidth = clickCanvas.width = window.innerWidth;
+            clickHeight = clickCanvas.height = window.innerHeight;
+        });
+
+        const burstParticles = [];
+
+        class BurstHeart {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.size = Math.random() * 16 + 10;
+                const angle = Math.random() * Math.PI * 2;
+                const speed = Math.random() * 5 + 2;
+                this.vx = Math.cos(angle) * speed;
+                this.vy = Math.sin(angle) * speed - 1.5; // Slight upward bias
+                this.gravity = 0.08;
+                this.opacity = 1;
+                this.decay = Math.random() * 0.02 + 0.015;
+                this.rotation = Math.random() * Math.PI * 2;
+                this.rotSpeed = (Math.random() - 0.5) * 0.1;
+                
+                const hues = ['#ff2d55', '#ff3b30', '#ff69b4', '#e056fd', '#f78fb3', '#ff9ff3'];
+                this.color = hues[Math.floor(Math.random() * hues.length)];
+            }
+
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.vy += this.gravity;
+                this.opacity -= this.decay;
+                this.rotation += this.rotSpeed;
+            }
+
+            draw() {
+                if (this.opacity <= 0) return;
+                clickCtx.save();
+                clickCtx.translate(this.x, this.y);
+                clickCtx.rotate(this.rotation);
+                clickCtx.globalAlpha = Math.max(0, this.opacity);
+                clickCtx.fillStyle = this.color;
+
+                clickCtx.beginPath();
+                const topCurveHeight = this.size * 0.3;
+                clickCtx.moveTo(0, topCurveHeight);
+                clickCtx.bezierCurveTo(0, 0, -this.size / 2, 0, -this.size / 2, topCurveHeight);
+                clickCtx.bezierCurveTo(-this.size / 2, (this.size + topCurveHeight) / 2, 0, this.size, 0, this.size);
+                clickCtx.bezierCurveTo(0, this.size, this.size / 2, (this.size + topCurveHeight) / 2, this.size / 2, topCurveHeight);
+                clickCtx.bezierCurveTo(this.size / 2, 0, 0, 0, 0, topCurveHeight);
+                clickCtx.closePath();
+                clickCtx.fill();
+                clickCtx.restore();
+            }
+        }
+
+        function createHeartBurst(x, y, count = 14) {
+            for (let i = 0; i < count; i++) {
+                burstParticles.push(new BurstHeart(x, y));
+            }
+        }
+
+        function animateBurst() {
+            clickCtx.clearRect(0, 0, clickWidth, clickHeight);
+            for (let i = burstParticles.length - 1; i >= 0; i--) {
+                const p = burstParticles[i];
+                p.update();
+                p.draw();
+                if (p.opacity <= 0) {
+                    burstParticles.splice(i, 1);
+                }
+            }
+            requestAnimationFrame(animateBurst);
+        }
+        animateBurst();
+
+        // Spawn hearts on window click/tap (unless clicking interactive buttons/inputs)
+        window.addEventListener('click', (e) => {
+            const isButton = e.target.closest('button, input, textarea, a, .wax-seal, #envelope');
+            if (!isButton) {
+                createHeartBurst(e.clientX, e.clientY, 10);
+            }
+        });
+
+        /* Envelope & Letter Logic */
+        const envelope = document.getElementById('envelope');
+        const waxSeal = document.getElementById('waxSeal');
+        const openBtn = document.getElementById('openBtn');
+        const envelopeView = document.getElementById('envelopeView');
+        const letterView = document.getElementById('letterView');
+        const resealBtn = document.getElementById('resealBtn');
+
+        let isEnvelopeOpen = false;
+
+        function openEnvelope() {
+            if (isEnvelopeOpen) return;
+            isEnvelopeOpen = true;
+
+            // Trigger burst
+            const rect = waxSeal.getBoundingClientRect();
+            createHeartBurst(rect.left + rect.width / 2, rect.top + rect.height / 2, 24);
+
+            // Step 1: Open CSS Envelope Flap
+            envelope.classList.add('open');
+
+            // Step 2: Transition from envelope landing view to open letter view
+            setTimeout(() => {
+                envelopeView.classList.add('opacity-0', 'scale-95');
+                
+                setTimeout(() => {
+                    envelopeView.classList.add('hidden');
+                    letterView.classList.remove('hidden');
+                    
+                    // Force repaint for smooth CSS fade in
+                    void letterView.offsetWidth;
+                    
+                    letterView.classList.remove('opacity-0', 'translate-y-12');
+                    letterView.classList.add('opacity-100', 'translate-y-0');
+                    
+                    // Extra confetti heart burst
+                    createHeartBurst(window.innerWidth / 2, window.innerHeight / 3, 20);
+                }, 500);
+            }, 900);
+        }
+
+        function closeEnvelope() {
+            if (!isEnvelopeOpen) return;
+            isEnvelopeOpen = false;
+
+            letterView.classList.remove('opacity-100', 'translate-y-0');
+            letterView.classList.add('opacity-0', 'translate-y-12');
+
+            setTimeout(() => {
+                letterView.classList.add('hidden');
+                envelopeView.classList.remove('hidden');
+
+                void envelopeView.offsetWidth;
+
+                envelopeView.classList.remove('opacity-0', 'scale-95');
+                envelopeView.classList.add('opacity-100', 'scale-100');
+
+                // Reset Envelope CSS
+                envelope.classList.remove('open');
+            }, 500);
+        }
+
+        waxSeal.addEventListener('click', openEnvelope);
+        openBtn.addEventListener('click', openEnvelope);
+        envelope.addEventListener('click', (e) => {
+            // Open if clicked envelope and not already open
+            if (!isEnvelopeOpen && !e.target.closest('#waxSeal')) {
+                openEnvelope();
+            }
+        });
+
+        resealBtn.addEventListener('click', closeEnvelope);
+
+        document.getElementById('burstBtn').addEventListener('click', (e) => {
+            const rect = e.target.getBoundingClientRect();
+            createHeartBurst(rect.left + rect.width / 2, rect.top + rect.height / 2, 30);
+        });
+
+    </script>
+</body>
+</html>
